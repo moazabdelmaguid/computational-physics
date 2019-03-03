@@ -531,6 +531,9 @@ def f(x):
     else:
         return sin(x) ** 2 / x ** 2
 
+def g(x):
+    return log(10 * x + 1)
+
 integration_slices = []
 def integral(f, a, b, error):
     delta = error / (b - a) # target accuracy per unit interval
@@ -550,10 +553,10 @@ def integral(f, a, b, error):
 
     return step(a, b, f(a), f(b))
 
-print(integral(f, 0, 10, 10 ** -4))
+print(integral(g, 0, 10, 10 ** -4))
 
-fvals = list(map(f, integration_slices))
-plot(integration_slices, fvals, 'o')
+gvals = list(map(g, integration_slices))
+plot(integration_slices, gvals, 'o')
 show()
 
 
