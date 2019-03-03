@@ -1,5 +1,5 @@
 from numpy import loadtxt, sum, array, linspace, exp, arange, pi, cos, sin, sqrt, empty
-from math import factorial
+from math import factorial, tanh, cosh
 from gaussxw import gaussxwab
 from pylab import plot, show, xlabel, ylabel, imshow, hot, xlim, ylim
 
@@ -416,36 +416,51 @@ from pylab import plot, show, xlabel, ylabel, imshow, hot, xlim, ylim
 #     integral += w[k] * rms_integrand(x[k])
 # print(sqrt(2*integral))
 
-## Exercise 5.14
-G = 6.674 * 10 ** -11 # gravitational constant in SI units
-sigma = 100 # mass density in SI units
-N = 100 # number of points in each direction for double Gaussian quadrature
-r, w = gaussxwab(N, -5,5)
-def Fz(z):
-    def integrand(x, y, z):
-        return 1 / (x**2 + y ** 2 + z ** 2) ** 3/2
+# ## Exercise 5.14
+# G = 6.674 * 10 ** -11 # gravitational constant in SI units
+# sigma = 100 # mass density in SI units
+# N = 100 # number of points in each direction for double Gaussian quadrature
+# r, w = gaussxwab(N, -5,5)
+# def Fz(z):
+#     def integrand(x, y, z):
+#         return 1 / (x**2 + y ** 2 + z ** 2) ** 3/2
+#
+#     integral = 0
+#     for i in range(N):
+#         for j in range(N):
+#             integral += w[i] * w[j] * z * integrand(r[i], r[j], z)
+#
+#     return G * sigma * integral
+#
+# zvalues = linspace(0, 10, 100)
+# Fzvalues = list(map(Fz, zvalues))
+#
+# plot(zvalues, Fzvalues, 'o')
+# xlabel('z (m)')
+# ylabel('Fz (N)')
+# show()
+# # The force seems to drop to zero for small values of z because the integrand becomes very small for points
+# # far from x,y = 0, and we don't have enough points near (0,0) when calculating the integral
 
-    integral = 0
-    for i in range(N):
-        for j in range(N):
-            integral += w[i] * w[j] * z * integrand(r[i], r[j], z)
+## Exercise 5.15
+def f(x):
+    return 1 + 0.5 * tanh(2*x)
 
-    return G * sigma * integral
+# calculate df/dx using central difference method
+def df_dx(x):
+    h = 10 ** -5  # step size
+    return (f(x + 0.5 * h) - f(x - 0.5 * h)) / h
 
-zvalues = linspace(0, 10, 100)
-Fzvalues = list(map(Fz, zvalues))
+def g(x):
+    # analytic derivative of f(x) above
+    return 1 / cosh(2*x) ** 2
 
-plot(zvalues, Fzvalues, 'o')
-xlabel('z (m)')
-ylabel('Fz (N)')
+xvals = linspace(-2, 2, 100)
+dfvals = list(map(df_dx, xvals))
+gvals = list(map(g, xvals))
+
+plot(xvals, dfvals, 'o')
+plot(xvals, gvals)
+xlabel('x')
 show()
-# The force seems to drop to zero for small values of z because the integrand becomes very small for points
-# far from x,y = 0, and we don't have enough points near (0,0) when calculating the integral 
-
-
-
-
-
-
-
 
