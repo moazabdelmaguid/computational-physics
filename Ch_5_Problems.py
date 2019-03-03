@@ -531,6 +531,7 @@ def f(x):
     else:
         return sin(x) ** 2 / x ** 2
 
+integration_slices = []
 def integral(f, a, b, error):
     delta = error / (b - a) # target accuracy per unit interval
     def step(x1, x2, f1, f2):
@@ -541,6 +542,8 @@ def integral(f, a, b, error):
         I1 = h * 0.5 * (f1 + f2)
         I2 = 0.5 * I1 + 0.5 * h * f_mid
         if (abs(1 / 3 * (I2 - I1)) < h * delta):
+            integration_slices.append(x1)
+            integration_slices.append(x2)
             return 1 / 6 * h * (f1 + 4 * f_mid + f2)
         else:
             return step(x1, midpoint, f1, f_mid) + step(midpoint, x2, f_mid, f2)
@@ -548,6 +551,10 @@ def integral(f, a, b, error):
     return step(a, b, f(a), f(b))
 
 print(integral(f, 0, 10, 10 ** -4))
+
+fvals = list(map(f, integration_slices))
+plot(integration_slices, fvals, 'o')
+show()
 
 
 
