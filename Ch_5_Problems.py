@@ -485,40 +485,70 @@ from pylab import plot, show, xlabel, ylabel, imshow, hot, xlim, ylim, gray
 # print(gamma(10)) # equals 9! = 362880
 
 
-## Exercise 5.19
-focal_len = 1 # in m
-screen_width = 0.1 # in m
-wavelength = 0.5 # in um (micrometers)
-slit_sep = 20 # in um
-num_slits = 10
-grating_width = slit_sep * num_slits
-def q(u):
-    alpha = pi / slit_sep
-    return sin(alpha * u) ** 2
+# ## Exercise 5.19
+# focal_len = 1 # in m
+# screen_width = 0.1 # in m
+# wavelength = 0.5 # in um (micrometers)
+# slit_sep = 20 # in um
+# num_slits = 10
+# grating_width = slit_sep * num_slits
+# def q(u):
+#     alpha = pi / slit_sep
+#     return sin(alpha * u) ** 2
+#
+# def I(x):
+#     # The integrand is highly oscillatory, so let's just use the trapezoidal rule
+#     # note we've scaled u in terms of um
+#     def integrand(u):
+#         return sqrt(q(u)) * exp(2j * pi * x * u / (wavelength * focal_len))
+#
+#     N = 1000 # num of integration slices
+#     h = grating_width / N # step size
+#     integral = h * 0.5 *(integrand(- grating_width / 2) + integrand(grating_width / 2))
+#     for k in range(1, N, 2):
+#         integral += integrand(-grating_width / 2 + k * h)
+#
+#     return 10 ** -12 * abs(integral) ** 2
+#
+# xvals = linspace(-.05, .05, 500)
+# Ivals = list(map(I, xvals))
+#
+# # plot(xvals, Ivals, 'o')
+# # # show()
+#
+# Iarray = empty([100,500], float)
+# for k in range(100):
+#     Iarray[k, :] = Ivals
+# imshow(Iarray)
+# gray()
+# show()
 
-def I(x):
-    # The integrand is highly oscillatory, so let's just use the trapezoidal rule
-    # note we've scaled u in terms of um
-    def integrand(u):
-        return sqrt(q(u)) * exp(2j * pi * x * u / (wavelength * focal_len))
 
-    N = 1000 # num of integration slices
-    h = grating_width / N # step size
-    integral = h * 0.5 *(integrand(- grating_width / 2) + integrand(grating_width / 2))
-    for k in range(1, N, 2):
-        integral += integrand(-grating_width / 2 + k * h)
+## Exercise 5.20
+def f(x):
+    if x == 0:
+        return 1
+    else:
+        return sin(x) ** 2 / x ** 2
 
-    return 10 ** -12 * abs(integral) ** 2
+def integral(f, a, b, error):
+    delta = error / (b - a) # target accuracy per unit interval
+    def step(x1, x2, f1, f2):
+        # calculates estimates of the integral from x1 to x2 with one and two slices, and the est. error
+        h = x2 - x1
+        midpoint = 0.5 * (x2 + x1)
+        f_mid = f(midpoint)
+        I1 = h * 0.5 * (f1 + f2)
+        I2 = 0.5 * I1 + 0.5 * h * f_mid
+        if (abs(1 / 3 * (I2 - I1)) < h * delta):
+            return 1 / 6 * h * (f1 + 4 * f_mid + f2)
+        else:
+            return step(x1, midpoint, f1, f_mid) + step(midpoint, x2, f_mid, f2)
 
-xvals = linspace(-.05, .05, 500)
-Ivals = list(map(I, xvals))
+    return step(a, b, f(a), f(b))
 
-# plot(xvals, Ivals, 'o')
-# # show()
+print(integral(f, 0, 10, 10 ** -4))
 
-Iarray = empty([100,500], float)
-for k in range(100):
-    Iarray[k, :] = Ivals
-imshow(Iarray)
-gray()
-show()
+
+
+
