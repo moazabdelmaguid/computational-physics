@@ -1,7 +1,7 @@
 from numpy import loadtxt, sum, array, linspace, exp, arange, pi, cos, sin, sqrt, empty, log
 from math import factorial, tanh, cosh
 from gaussxw import gaussxwab
-from pylab import plot, show, xlabel, ylabel, imshow, hot, xlim, ylim
+from pylab import plot, show, xlabel, ylabel, imshow, hot, xlim, ylim, gray
 
 ## Exercise 5.1
 # data = loadtxt("../cpresources/velocities.txt", float)
@@ -465,21 +465,60 @@ from pylab import plot, show, xlabel, ylabel, imshow, hot, xlim, ylim
 # show()
 
 
-## Exercise 5.17
-# for change of variables z = x / (c + x), x = c gives z = 1/2
-# thus since the max of x^(a-1) e^-x occurs at a-1, choosing c = a-1 puts the peak of the integrand at z = 1/2
-# let's use gaussian quadrature with 100 points
-N = 100
-x, w = gaussxwab(N, 0 ,1)
-def gamma(a):
-    c = a - 1
-    def integrand(z):
-        return c * exp(c * log((c * z) / (1 - z)) - (c * z) / (1 - z)) / (1 - z) ** 2
-    integral = 0
-    for k in range(N):
-        integral += w[k] * integrand(x[k])
+# ## Exercise 5.17
+# # for change of variables z = x / (c + x), x = c gives z = 1/2
+# # thus since the max of x^(a-1) e^-x occurs at a-1, choosing c = a-1 puts the peak of the integrand at z = 1/2
+# # let's use gaussian quadrature with 100 points
+# N = 100
+# x, w = gaussxwab(N, 0 ,1)
+# def gamma(a):
+#     c = a - 1
+#     def integrand(z):
+#         return c * exp(c * log((c * z) / (1 - z)) - (c * z) / (1 - z)) / (1 - z) ** 2
+#     integral = 0
+#     for k in range(N):
+#         integral += w[k] * integrand(x[k])
+#
+#     return integral
+#
+# print(gamma(3/2)) # exact value is sqrt(pi)/2
+# print(gamma(10)) # equals 9! = 362880
 
-    return integral
 
-print(gamma(3/2)) # exact value is sqrt(pi)/2
-print(gamma(10)) # equals 9! = 362880
+## Exercise 5.19
+focal_len = 1 # in m
+screen_width = 0.1 # in m
+wavelength = 0.5 # in um (micrometers)
+slit_sep = 20 # in um
+num_slits = 10
+grating_width = slit_sep * num_slits
+def q(u):
+    alpha = pi / slit_sep
+    return sin(alpha * u) ** 2
+
+def I(x):
+    # The integrand is highly oscillatory, so let's just use the trapezoidal rule
+    # note we've scaled u in terms of um
+    def integrand(u):
+        return sqrt(q(u)) * exp(2j * pi * x * u / (wavelength * focal_len))
+
+    N = 1000 # num of integration slices
+    h = grating_width / N # step size
+    integral = h * 0.5 *(integrand(- grating_width / 2) + integrand(grating_width / 2))
+    for k in range(1, N, 2):
+        integral += integrand(-grating_width / 2 + k * h)
+
+    return 10 ** -12 * abs(integral) ** 2
+
+xvals = linspace(-.05, .05, 500)
+Ivals = list(map(I, xvals))
+
+# plot(xvals, Ivals, 'o')
+# # show()
+
+Iarray = empty([100,500], float)
+for k in range(100):
+    Iarray[k, :] = Ivals
+imshow(Iarray)
+gray()
+show()
