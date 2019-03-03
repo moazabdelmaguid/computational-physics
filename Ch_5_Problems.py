@@ -1,5 +1,7 @@
 from numpy import loadtxt, sum, array, linspace, exp, arange, pi, cos, sin, sqrt, empty
-from pylab import plot, show, xlabel, ylabel, imshow, hot
+from math import factorial
+from gaussxw import gaussxwab
+from pylab import plot, show, xlabel, ylabel, imshow, hot, xlim, ylim
 
 ## Exercise 5.1
 # data = loadtxt("../cpresources/velocities.txt", float)
@@ -144,26 +146,285 @@ from pylab import plot, show, xlabel, ylabel, imshow, hot
 # show()
 
 # Exercise 5.6
-def f(x):
-    return x**4 - 2*x + 1
+# def f(x):
+#     return x**4 - 2*x + 1
+#
+# N1 = 10
+# N2 = 2*N1
+# numPoints1 = N1 + 1
+# numPoints2 = N2 + 1
+# a = 0
+# b = 2
+# h1 = (b - a) / N1
+# h2 = (b - a) / N2
+#
+# fValues1 = sum(list(map(f, arange(a + h1, b, h1))))
+# fValues2 = sum(list(map(f, arange(a + h2, b, h1)))) # we can nest the points
+#
+# I1 = h1 * (0.5*f(a) + 0.5*f(b) + fValues1)
+# I2 = h2 * (0.5*f(a) + 0.5*f(b) + fValues1 + fValues2)
+# epsilon = 1/3 * (I2-I1)
+# print(I1)
+# print(I2)
+# print("error is approximately", epsilon)
+# print(I2 + epsilon) # error is good to only h^2
 
-N1 = 10
-N2 = 2*N1
-numPoints1 = N1 + 1
-numPoints2 = N2 + 1
-a = 0
-b = 2
-h1 = (b - a) / N1
-h2 = (b - a) / N2
+# Exercise 5.7 part a
+# def adapTrapI(f, a, b, N, Iprev, error):
+#     N = 2*N
+#     h = (b - a)/N
+#     I = 0.5*Iprev + h*sum(list(map(f, arange(a + h, b, 2*h))))
+#     print(I)
+#     epsilon = 1/3*(I - Iprev)
+#     if (abs(epsilon) < error):
+#         print('N = ', N)
+#         print('error = ', epsilon)
+#         return I
+#     else:
+#         return adapTrapI(f, a, b, N, I, error)
+#
+# def f(x):
+#     return sin(sqrt(100*x))**2
+#
+# print(adapTrapI(f, 0, 1, 1, 0.5*(f(1)-f(0)), .000001))
 
-fValues1 = sum(list(map(f, arange(a + h1, b, h1))))
-fValues2 = sum(list(map(f, arange(a + h2, b, h1)))) # we can nest the points
+# part b
+#
+# def adapTrapI_step(f, a, b, N, Iprev):
+#     N = 2 * N
+#     h = (b - a)/N
+#     I = 0.5 * Iprev + h * sum(list(map(f, arange(a + h, b, 2 * h))))
+#     return I
+#
+# def romberg(f, a, b, error):
+#     #starts with N=2 slices
+#     R11 = (b-a)/2 * (0.5 * f(a) + 0.5 * f(b) + f(a + (b-a)/2 )) # initial estimate of I with N=2
+#     R_list = [ R11, adapTrapI_step(f, a, b, 2, R11) ] # keep a list of the romberg estimates
+#
+#     def Rij(i, m):
+#         # returns the linear index of Rij corresponding to i, m
+#         return R_list[int(1/2 * i * (i - 1) + m - 1)] # given by sum_{j=0}^{i-1} + m - 1
+#
+#     def romberg_step(i, m):
+#         #returns R_i,m such that error estimate is less than given error
+#         #print(R_list)
+#         if m == 1:
+#             # if m = 1, then need to compute the next nested trapezoidal rule estimate
+#             print('i = ', i)
+#             print('m = ', m)
+#             R_list.append(adapTrapI_step(f, a, b, 2**(i-1), Rij(i - 1, 1)))
+#             epsilon = 1/3 * (Rij(i, 1) - Rij(i - 1, 1))
+#             print(Rij(i, m))
+#             print('epsilon = ', epsilon)
+#             if abs(epsilon) < error:
+#                 return Rij(i, m)
+#             else:
+#                 return romberg_step(i, m + 1)
+#         else:
+#             print('i = ', i)
+#             print('m = ', m)
+#             epsilon = 1/(4**(m-1) - 1) * (Rij(i, m - 1) - Rij(i - 1, m - 1))
+#             print('epsilon = ', epsilon)
+#             R_list.append(Rij(i, m - 1) + epsilon)
+#             print(Rij(i,m))
+#             if abs(epsilon) < error:
+#                 return Rij(i, m)
+#             else:
+#                 if i == m:
+#                     return romberg_step(i + 1, 1)
+#                 else:
+#                     return romberg_step(i, m + 1)
+#     return romberg_step(2, 2)
+#
+# def f(x):
+#     return sin(sqrt(100*x))**2
+#
+# def g(x):
+#     return x**2
+#
+# print(romberg(f, 0, 1, 0.000001))
 
-I1 = h1 * (0.5*f(a) + 0.5*f(b) + fValues1)
-I2 = h2 * (0.5*f(a) + 0.5*f(b) + fValues1 + fValues2)
-epsilon = 1/3 * (I2-I1)
-print(I1)
-print(I2)
-print("error is approximately", epsilon)
-print(I2 + epsilon) # error is good to only h^2
+
+## Exercise 5.9
+# def cV(T):
+#     c = 7.48279 # = 9V*rho*k_B in SI units
+#     thetaD = 428 # in K
+#
+#     def f(x):
+#         return x**4 * exp(x) / (exp(x) - 1)**2
+#
+#     # perform the integration using Gaussian quadrature
+#     N = 50  # 50 sample points
+#     x, w = gaussxwab(N, 0, thetaD / T)
+#     integral = 0.0
+#     for k in range(N):
+#         integral += w[k] * f(x[k])
+#
+#     return c * (T / thetaD) ** 3 * integral
+#
+# T = linspace(5, 500, 99)
+# C = list(map(cV, T))
+# plot(T, C, 'o')
+# xlim(5, 500)
+# xlabel('T (K)')
+# ylabel('C_V (J/K)')
+# show()
+
+
+## Exercise 5.10
+# m = 1 # mass
+# N = 20 # number of points for gaussian quadrature
+# def T(a):
+#     def f(x):
+#         def v(y):
+#             return y ** 4
+#
+#         return 1 / sqrt(v(a) - v(x))
+#
+#     x, w = gaussxwab(N, 0, a)
+#     integral = 0.0
+#     for k in range(N):
+#         integral += w[k] * f(x[k])
+#
+#     return sqrt(8)*integral
+#
+# # make a plot of T for a from 0 to 2
+# a = linspace(0, 2, 20)
+# periods = list(map(T, a))
+# plot(a, periods, 'o')
+# xlabel('a (m)')
+# ylabel('T (s)')
+# show()
+
+# ## Exercise 5.11
+# def integrator(f, a, b, N):
+#     """
+#     integrates f from a to b using Gaussian quadrature with N points, requires gaussxwab
+#     :param f: 1d function
+#     :param a: lower bound of domain
+#     :param b: upper bound of domain
+#     :param N: number of points
+#     :return:  floating value of integral
+#     """
+#     x, w = gaussxwab(N, a, b)
+#     integral = 0.0
+#     for k in range(N):
+#         integral += w[k] * f(x[k])
+#
+#     return integral
+#
+# def I(x, wavelength, z):
+#     '''
+#
+#     :param x: x in meters
+#     :param wavelength: in meters
+#     :param z: in meters
+#     :return: value of I / I0
+#     '''
+#     u = x * sqrt(2 / (wavelength * z))
+#     N = 50 # number of integration points
+#     def c(u):
+#         def f(x):
+#             return cos(0.5 * pi * x ** 2)
+#         return integrator(f, 0, u, N)
+#
+#     def s(u):
+#         def g(x):
+#             return sin(0.5 * pi * x ** 2)
+#         return integrator(g, 0, u, N)
+#
+#     return 1 / 8 * ((2 * c(u) + 1) ** 2 + (2 * s(u) + 1) ** 2)
+# # plot I/I0 for x between -5 and 5 m, wavelength = 1, z = 3 m
+# xvalues = linspace(-5, 5, 100)
+# yvalues = []
+# wavelength = 1
+# z = 3
+# for k in range(100):
+#     yvalues.append(I(xvalues[k], wavelength, z))
+#
+# plot(xvalues, yvalues)
+# xlabel('x (m)')
+# ylabel('I/I0')
+# show()
+
+
+## Exercise 5.12
+# def f(z):
+#     return (z / (1 - z) ) ** 3 / (exp(z / (1 - z)) - 1) * 1 / (1 - z) ** 2
+# # integrand is pretty smooth, so can use gaussian quadrature
+# N = 50 # points for Gaussian quadrature
+# x, w = gaussxwab(N, 0, 1)
+# integral = 0.0
+# for k in range(N):
+#     integral += w[k] * f(x[k])
+# print(integral)
+
+# ## Exercise 5.13
+# def H(n, x):
+#     '''
+#     computes the n-th Hermite polynomial using a linear iterative procedure
+#     :param n: integer
+#     :param x: value of x
+#     :return: value of H_n(x)
+#     '''
+#     def H_iter(a, b, count):
+#         if (count == 0):
+#             return b
+#         else:
+#             return H_iter(2  * x * a - 2 * (count - 1) * b, a, count - 1)
+#
+#     return H_iter(2 * x, 1, n)
+#
+# # plot H for n = 0 - 3, x between -4, 4
+# # xvalues = linspace(-4, 4, 100)
+# # H0values = []
+# # H1values = []
+# # H2values = []
+# # H3values = []
+# # for k in range(100):
+# #     H0values.append(H(0,xvalues[k]))
+# #     H1values.append(H(1, xvalues[k]))
+# #     H2values.append(H(2, xvalues[k]))
+# #     H3values.append(H(3, xvalues[k]))
+# #
+# # plot(xvalues, H0values)
+# # plot(xvalues, H1values)
+# # plot(xvalues, H2values)
+# # plot(xvalues, H3values)
+# # show()
+#
+# def psi(n, x):
+#     return 1 / sqrt(2 ** n * factorial(n) * sqrt(pi)) * exp(- x ** 2 / 2) * H(n, x)
+#
+# # xvalues = linspace(-10, 10, 500)
+# # H30values = []
+# # for k in range(500):
+# #     H30values.append(psi(30, xvalues[k]))
+# # plot(xvalues, H30values)
+# # show()
+#
+# def rms_integrand(z):
+#     def x(z):
+#         return z / (1 - z)
+#
+#     return x(z) ** 2 * abs(psi(5,x(z))) ** 2 * (1/(1 - z) ** 2)
+#
+# integral = 0.0
+# N = 100
+# x, w = gaussxwab(N, 0,1)
+# for k in range(N):
+#     integral += w[k] * rms_integrand(x[k])
+# print(sqrt(2*integral))
+
+## Exercise 5.14
+
+
+
+
+
+
+
+
+
+
 
