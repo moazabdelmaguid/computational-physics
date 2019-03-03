@@ -1,4 +1,4 @@
-from numpy import loadtxt, sum, array, linspace, exp, arange, pi, cos, sin, sqrt, empty
+from numpy import loadtxt, sum, array, linspace, exp, arange, pi, cos, sin, sqrt, empty, log
 from math import factorial, tanh, cosh
 from gaussxw import gaussxwab
 from pylab import plot, show, xlabel, ylabel, imshow, hot, xlim, ylim
@@ -442,25 +442,44 @@ from pylab import plot, show, xlabel, ylabel, imshow, hot, xlim, ylim
 # # The force seems to drop to zero for small values of z because the integrand becomes very small for points
 # # far from x,y = 0, and we don't have enough points near (0,0) when calculating the integral
 
-## Exercise 5.15
-def f(x):
-    return 1 + 0.5 * tanh(2*x)
+# ## Exercise 5.15
+# def f(x):
+#     return 1 + 0.5 * tanh(2*x)
+#
+# # calculate df/dx using central difference method
+# def df_dx(x):
+#     h = 10 ** -5  # step size
+#     return (f(x + 0.5 * h) - f(x - 0.5 * h)) / h
+#
+# def g(x):
+#     # analytic derivative of f(x) above
+#     return 1 / cosh(2*x) ** 2
+#
+# xvals = linspace(-2, 2, 100)
+# dfvals = list(map(df_dx, xvals))
+# gvals = list(map(g, xvals))
+#
+# plot(xvals, dfvals, 'o')
+# plot(xvals, gvals)
+# xlabel('x')
+# show()
 
-# calculate df/dx using central difference method
-def df_dx(x):
-    h = 10 ** -5  # step size
-    return (f(x + 0.5 * h) - f(x - 0.5 * h)) / h
 
-def g(x):
-    # analytic derivative of f(x) above
-    return 1 / cosh(2*x) ** 2
+## Exercise 5.17
+# for change of variables z = x / (c + x), x = c gives z = 1/2
+# thus since the max of x^(a-1) e^-x occurs at a-1, choosing c = a-1 puts the peak of the integrand at z = 1/2
+# let's use gaussian quadrature with 100 points
+N = 100
+x, w = gaussxwab(N, 0 ,1)
+def gamma(a):
+    c = a - 1
+    def integrand(z):
+        return c * exp(c * log((c * z) / (1 - z)) - (c * z) / (1 - z)) / (1 - z) ** 2
+    integral = 0
+    for k in range(N):
+        integral += w[k] * integrand(x[k])
 
-xvals = linspace(-2, 2, 100)
-dfvals = list(map(df_dx, xvals))
-gvals = list(map(g, xvals))
+    return integral
 
-plot(xvals, dfvals, 'o')
-plot(xvals, gvals)
-xlabel('x')
-show()
-
+print(gamma(3/2)) # exact value is sqrt(pi)/2
+print(gamma(10)) # equals 9! = 362880
