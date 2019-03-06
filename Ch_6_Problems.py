@@ -1,4 +1,4 @@
-from numpy import array, empty
+from numpy import array, empty, copy
 from pylab import plot, show, xlabel, ylabel, linspace
 
 def gaussian_Elim(A, v):
@@ -11,6 +11,17 @@ def gaussian_Elim(A, v):
     N = len(v)
     # Gaussian Elimination
     for m in range(N):
+        # Partial pivoting
+        largest = abs(A[m, m])
+        largest_row = m
+        for i in range(m + 1, N):
+            if abs(A[i, m]) > largest:
+                largest = A[i, m]
+                largest_row = i
+        if largest_row != m:
+            current = copy(A[m, :]) # need to use copy because A[m, :] is a reference
+            A[m, :] = A[largest_row, :]
+            A[largest_row, :] = current
 
         # Divide by the diagonal element
         div = A[m,m]
@@ -42,3 +53,9 @@ v = array([5, 0, 5, 0], float)
 
 print(gaussian_Elim(A, v))
 
+B = array([[0, 1, 4, 1],
+           [3, 4, -1, -1],
+           [1, -4, 1, 5],
+           [2, -2, 1, 3]], float)
+w = array([ -4, 3, 9, 7 ], float)
+print(gaussian_Elim(B, w))
