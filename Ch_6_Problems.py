@@ -32,3 +32,13 @@ def gaussian_Elim(A, v):
 
     return x
 
+
+## Exercise 6.1
+A = array([[4, -1, -1, -1],
+           [1, -2, 0, 1],
+           [-1, 0, 3, -1],
+           [1, 1, 1, -4]], float)
+v = array([5, 0, 5, 0], float)
+
+print(gaussian_Elim(A, v))
+
