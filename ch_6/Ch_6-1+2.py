@@ -19,9 +19,13 @@ def gaussian_Elim(A, v):
                 largest = A[i, m]
                 largest_row = i
         if largest_row != m:
-            current = copy(A[m, :]) # need to use copy because A[m, :] is a reference
+            # switch rows in A
+            current_row = copy(A[m, :])  # need to use copy because A[m, :] is a reference
             A[m, :] = A[largest_row, :]
-            A[largest_row, :] = current
+            A[largest_row, :] = current_row
+
+            # switch rows in v
+            v[m], v[largest_row] = v[largest_row], v[m]
 
         # Divide by the diagonal element
         div = A[m,m]
