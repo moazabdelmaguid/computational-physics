@@ -16,7 +16,7 @@ def gaussian_Elim(A, v):
         largest_row = m
         for i in range(m + 1, N):
             if abs(A[i, m]) > largest:
-                largest = A[i, m]
+                largest = abs(A[i, m])
                 largest_row = i
         if largest_row != m:
             # switch rows in A
