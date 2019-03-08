@@ -35,7 +35,7 @@ x = solve_banded((1,1), banded_A, b)
 
 # define position at time t for i-th sphere
 def r(A, omega, i, t):
-    return 2*i - N / 2 + A * cos(omega * t)
+    return 2*i - N + A * cos(omega * t)
 
 s = empty(N, sphere)
 for i in range(N):
