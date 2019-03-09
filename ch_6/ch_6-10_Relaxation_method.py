@@ -1,5 +1,5 @@
-from scipy import exp
-
+from scipy import exp, linspace
+from pylab import plot, show, xlabel, ylabel
 # Constants
 accuracy = 10 ** -8
 
@@ -13,9 +13,14 @@ def g(c):
 
     x1 = 0.5 # starting value
     x2 = f(x1)
-    while(abs(error(x1, x2, c)) > accuracy):
-        x1, x2 = x2, f(c, x2)
+    while(abs(error(x1, x2)) > accuracy):
+        x1, x2 = x2, f(x2)
 
     return x2
 
-
+c = linspace(0, 3, 300)
+x = list(map(g, c))
+plot(c, x, 'o')
+xlabel('c')
+ylabel('x')
+show()
