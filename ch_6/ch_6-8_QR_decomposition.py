@@ -3,7 +3,7 @@ from scipy import transpose
 
 def eigen_decomp(A, error):
     """
-    gives the eigenvectors and eigenvalues of a symmetric matrix A with tolerance error
+    gives the eigenvectors and eigenvalues of a symmetric matrix A with tolerance error using QR decomposition
     :param A: symmetric matrix
     :param error: positive float
     :return: a list with first element a matrix whose columns are the eigenvectors of A, and the second element
