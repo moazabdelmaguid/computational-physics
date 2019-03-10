@@ -7,7 +7,7 @@ a = 1
 b = 2
 accuracy = 10 ** -6
 
-# If we try using a relaxation method to solve x = y(a + x^2), y = b / (a + x^2):
+# We use a relaxation method to solve x = y(a + x^2), y = b / (a + x^2):
 
 def f1(x, y):
     return y * (a + x ** 2)
@@ -25,7 +25,13 @@ def g2(x, y):
     return x / (a + x ** 2)
 
 
-def stationary_points(a, b, f, g):
+def stationary_points(f, g):
+    """
+
+    :param f: function for x = f(x,y)
+    :param g: function for y = g(x,y)
+    :return: a list [x, y] of the fixed points of the above system of equations
+    """
     iterations = 1
 
     def relative_change(x1, x2):
