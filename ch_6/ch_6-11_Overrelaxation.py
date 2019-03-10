@@ -1,9 +1,7 @@
-from scipy import exp, linspace
-from pylab import plot, show, xlabel, ylabel
+from scipy import exp
 
 # Constants
 accuracy = 10 ** -8
-# omega =
 
 def g(c):
     iterations = 1
