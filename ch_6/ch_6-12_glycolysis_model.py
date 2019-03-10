@@ -56,4 +56,4 @@ def stationary_points(f, g):
 # if we try to use x = f1(x,y) and y = g1(x,y) to solve for the stationary points, the relaxation method fails
 # but if we use f2 and g2 as defined above, which are just rearrangements of the original equations,
 # the method nowconverges
-print(stationary_points(a, b, f2, g2))
+print(stationary_points(f2, g2))
