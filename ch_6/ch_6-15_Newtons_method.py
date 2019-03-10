@@ -17,7 +17,7 @@ show()
 # Solve for the roots of f using Newton's method
 accuracy = 10 ** -10
 
-def find_root(f, g, start_val, accuracy):
+def find_root(f, f_prime, start_val, accuracy):
     x = start_val
     delta = f(x) / f_prime(x)
     while abs(delta) > accuracy:
