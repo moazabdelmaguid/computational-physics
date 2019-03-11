@@ -34,6 +34,8 @@ accuracy = 0.0001  # volts
 #
 # print(x2, y2)
 
+## Can't get relaxation method to converge
+
 # Using Newton's method
 def f(arr):
     return array([ (arr[0] - V_plus) / R1 + arr[0] / R2 + I0 * (exp((arr[0] - arr[1]) / V_T) - 1) ,
